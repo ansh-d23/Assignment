@@ -32,8 +32,8 @@ The **Preferences Sharing Interface** is a web application designed to empower u
 
 ## Images
 
-  ![image](src/components/assets/images/prototypeImages/imageone.png)
-  ![image](src/components/assets/images/prototypeImages/imagetwo.png)
-  ![image](src/components/assets/images/prototypeImages/imagethree.png)
+  ![image](src/components/assets/imageone.png)
+  ![image](src/components/assets/imagetwo.png)
+  ![image](src/components/assets/imagethree.png)
 
 ---
