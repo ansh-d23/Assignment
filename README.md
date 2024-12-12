@@ -29,9 +29,9 @@
 ---
 
 ## Images
-
-  ![image](src/components/assets/imageone.png)
-  ![image](src/components/assets/imagetwo.png)
-  ![image](src/components/assets/imagethree.png)
+src/assets/imageone.png
+  ![image](src/assets/imageone.png)
+  ![image](src/assets/imagetwo.png)
+  ![image](src/assets/imagethree.png)
 
 ---
