@@ -89,7 +89,7 @@ const LandingForm = () => {
             
             {userPreferences && !showPopUp && (
                 <form onSubmit={handleSubmit}>
-                    <h2>User Information</h2>
+                    <h2>User Form</h2>
                     <div className="form-label">
                         <label>Name:</label>
                         <input
