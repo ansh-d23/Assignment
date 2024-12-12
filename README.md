@@ -1,7 +1,5 @@
 # Preferences Sharing Interface
 
-The **Preferences Sharing Interface** is a web application designed to empower users to manage their personal data sharing preferences. This project features a user-friendly landing page, a backend dashboard for administrators, and secure user login functionality.
-
 ---
 
 ## Features
