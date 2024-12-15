@@ -42,10 +42,6 @@ const PopUp = ({ setShowPopUp }) => {
                 },
                 body: JSON.stringify(preferences),
             });            
-            
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
 
             const data = await response.json();
             console.log('Preferences saved successfully:', data);

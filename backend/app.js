@@ -11,6 +11,7 @@ app.use(cors());
 connectDB();
 
 app.use('/api', userRoutes);
+// app.use('/analytics', userRoutes);
 
 const PORT = 5000;
 app.listen(PORT, () => {

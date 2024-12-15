@@ -13,15 +13,43 @@ const NavbarB = () => {
     navigate("/");
   };
 
+  const downloadCSV = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/api/download', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'text/csv',
+            },
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'user_data.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        console.error('Error downloading CSV:', error);
+    }
+};
+
+
   return (
     <nav className="navbar">
       <div onClick={() => navigate("/")} className="navbar-logo">
         Admin Dashboard
       </div>
       <ul className="navbar-links">
-        {/* <li onClick={() => navigate("/edit")} className="navbar-item">
-          Edit Preferences
-        </li> */}
+         <li onClick={() => navigate("/analysis")} className="navbar-item">
+          Analytics
+        </li>
+        <li onClick={downloadCSV} className="navbar-item">
+          download CSV
+        </li>
         <li onClick={handleLogout} className="navbar-item">
           Logout
         </li>

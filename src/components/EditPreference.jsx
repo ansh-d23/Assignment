@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 import './stylings/popUp.css';
 
 const EditPreferences = () => {
@@ -20,11 +21,9 @@ const EditPreferences = () => {
     useEffect(() => {
         const fetchPreferences = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/user-preference/${userID}`);
-                if (!response.ok) {
-                    throw new Error('Error fetching preferences');
-                }
-                const data = await response.json();
+                const response = await axios.get(`http://localhost:5000/api/user-preference/${userID}`);
+                const data = response.data;
+
                 setToggleStates({
                     emailPermission: data.e_Permission || false,
                     phonePermission: data.p_Permission || false,
@@ -34,6 +33,7 @@ const EditPreferences = () => {
                 if (data.e_Permission) setEmail(data.email || '');
                 if (data.p_Permission) setPhone(data.phone || '');
                 if (data.a_Permission) setAddress(data.address || '');
+
             } catch (err) {
                 console.error('Error fetching preferences:', err);
                 setError(err.message);
@@ -55,17 +55,17 @@ const EditPreferences = () => {
         setError(null);
 
         if (toggleStates.emailPermission && !email.trim()) {
-            alert("email is req!");
+            alert("Email is required!");
             setLoading(false);
             return;
         }
         if (toggleStates.phonePermission && !phone.trim()) {
-            alert("phone number req!");
+            alert("Phone number is required!");
             setLoading(false);
             return;
         }
         if (toggleStates.addressPermission && !address.trim()) {
-            alert("address req!");
+            alert("Address is required!");
             setLoading(false);
             return;
         }
@@ -80,30 +80,47 @@ const EditPreferences = () => {
             address: toggleStates.addressPermission ? address : null,
         };
 
-        console.log(preferences);
-
         try {
-            const response = await fetch('http://localhost:5000/api/edit-preference', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(preferences),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
+            const response = await axios.put('http://localhost:5000/api/edit-preference', preferences);
+            console.log('Preferences updated successfully:', response.data);
             alert("Preferences updated successfully");
-            console.log('Preferences updated successfully:', data);
+
+            await calcDistance();
+            await calcTrust();
+            console.log("trust built")
+
         } catch (err) {
             console.error('Error submitting preferences:', err);
             setError(err.message);
         } finally {
             setLoading(false);
             window.location.href = '/user';
+        }
+    };
+
+    const calcDistance = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/calcDistance', {
+                userSub: user.sub
+            });
+
+            console.log('Distance calculated successfully:', response.data);
+            
+        } catch (error) {
+            console.error('Error calling /calcDistance:', error);
+        }
+    };
+
+    const calcTrust = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/trust', {
+                userSub: user.sub 
+            });
+
+            console.log('Trust index calculated successfully:', response.data);
+
+        } catch (error) {
+            console.error('Error calling /trust:', error);
         }
     };
 
@@ -185,6 +202,7 @@ const EditPreferences = () => {
                 <button onClick={handleSubmit} disabled={loading}>
                     {loading ? 'Submitting...' : 'Submit'}
                 </button>
+
                 {error && <p className="error-message">Error: {error}</p>}
             </div>
         </div>

@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import HomePage from "./components/Homepage";
 import Navbar from "./components/Navbar";
 import NavbarB from "./components/Navbar_backend";
+import NavbarC from "./components/Navbar_analytics";
 import LandingPage from "./components/LandingPage";
 import BackendDashboard from "./components/BackendDashboard";
 import PopUp from "./components/popUp";
 import EditPreference from "./components/EditPreference";
+import Analysis from "./components/analytics";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const App = () => {
@@ -32,6 +34,7 @@ const App = () => {
 		<>
 		{(location.pathname === "/user" || location.pathname === "/edit") && <Navbar />}
 		{location.pathname === "/backend_dashboard" && <NavbarB />}
+		{location.pathname === "/analysis" && <NavbarC />}
 
 		<Routes>
 
@@ -46,6 +49,7 @@ const App = () => {
 				}
 				<Route path="/popUp" element={<PopUp />} />
 				<Route path="/edit" element={<EditPreference />} />
+				<Route path="/analysis" element={<Analysis />} />
 			</>
 			)}
 		</Routes>

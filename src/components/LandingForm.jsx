@@ -8,6 +8,7 @@ const LandingForm = () => {
     const { user, isLoading } = useAuth0(); 
     const [userPreferences, setUserPreferences] = useState(null);
     const [showPopUp, setShowPopUp] = useState(false);
+    // const [address, setAddress] = useState(false);
     const [formData, setFormData] = useState({
         userSub: '',
         name: '',
@@ -15,7 +16,6 @@ const LandingForm = () => {
         phone: '',
         address: ''
     });
-
 
     useEffect(() => {
         if (user?.sub) {
@@ -26,33 +26,55 @@ const LandingForm = () => {
         }
     }, [user]);
 
-
     useEffect(() => {
-        if (user?.sub) {
-            const fetchUserPreferences = async () => {
-                try {
-                    console.log("form_data")
-                    const response = await axios.get(`http://localhost:5000/api/user-preference/${encodeURIComponent(user.sub)}`, {
-                        headers: { 
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    setUserPreferences(response.data); 
-                    console.log(response.data);
-                } catch (error) {
-                    console.error('Error fetching user preferences:', error);
-                    setUserPreferences(null); 
-                }
-            };
+        const fetchUserPreferences = async () => {
+            if (!user?.sub) return;
 
-            fetchUserPreferences();
-        }
+            try {
+                const response = await axios.get(`http://localhost:5000/api/user-preference/${encodeURIComponent(user.sub)}`, {
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setUserPreferences(response.data); 
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error fetching user preferences:', error);
+                setUserPreferences(null); 
+            }
+        };
+
+        const fetchUserData = async () => {
+            if (!user?.sub) return;
+
+            try {
+                await axios.post(`http://localhost:5000/api/log`, {
+                    userSub: user.sub 
+                }, {
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } catch (error) {
+                console.error('Error logging user data:', error);
+            }
+        };
+
+        fetchUserPreferences();
+        fetchUserData();
     }, [user]);
 
     useEffect(() => {
         if (userPreferences === null) {
             setShowPopUp(true);
-        } else {
+        } else if (userPreferences) {
+            setFormData((prevData) => ({
+                ...prevData,
+                name: userPreferences.name || '',
+                email: userPreferences.email || '',
+                phone: userPreferences.phone || '',
+                address: userPreferences.address || ''
+            }));
             setShowPopUp(false);
         }
     }, [userPreferences]);
@@ -65,7 +87,7 @@ const LandingForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
-    
+
         try {
             const response = await axios.post('http://localhost:5000/api/submit', formData, {
                 headers: { 
@@ -77,6 +99,35 @@ const LandingForm = () => {
         } catch (error) {
             console.error('Error submitting form data:', error);
         }
+    
+            try {
+                const res = await axios.post('http://localhost:5000/api/calcDistance', {
+                    userSub: formData.userSub 
+                }, {
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log("Distance calculated");
+                console.log(res.data);
+            } catch (error) {
+                console.error('Error calculating distance:', error);
+            }
+
+            try {
+                const res = await axios.post('http://localhost:5000/api/trust', {
+                    userSub: formData.userSub 
+                }, {
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    }
+                });
+                console.log("saved");
+                console.log(res.data);
+            } catch (error) {
+                console.error('Error calculating distance:', error);
+            }     
+        
     };
 
     if (isLoading) {
@@ -95,7 +146,6 @@ const LandingForm = () => {
                         <input
                             type="text"
                             name="name"
-                            placeholder={userPreferences.name}
                             value={formData.name}
                             onChange={handleChange}
                             required
@@ -106,9 +156,9 @@ const LandingForm = () => {
                         <input
                             type="email"
                             name="email"
-                            placeholder={userPreferences.email}
                             value={formData.email}
                             onChange={handleChange}
+                            required
                             disabled={!userPreferences.e_Permission}
                         />
                     </div>
@@ -117,9 +167,9 @@ const LandingForm = () => {
                         <input
                             type="tel"
                             name="phone"
-                            placeholder={userPreferences.phone}
                             value={formData.phone}
                             onChange={handleChange}
+                            required
                             disabled={!userPreferences.p_Permission}
                         />
                     </div>
@@ -128,9 +178,9 @@ const LandingForm = () => {
                         <input
                             type="text"
                             name="address"
-                            placeholder={userPreferences.address}
                             value={formData.address}
                             onChange={handleChange}
+                            required
                             disabled={!userPreferences.a_Permission}
                         />
                     </div>
